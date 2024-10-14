@@ -18,13 +18,12 @@ class UserApiViewSet(ModelViewSet):
         return super().create(request, *args, **kwargs)
 
     def partial_update(self, request, *args, **kwargs):
-        password = request.data['password']
-        kwargs['partial'] = True
-        if password:
+        password = request.data.get('password') 
+        if password is not None and password != '':
             request.data['password'] = make_password(password)
         else:
-            request.data['password'] = request.user.password
-        return super().update(request, *args, **kwargs)
+            del request.data['password']
+        return super().partial_update(request, *args, **kwargs)
     
 class UserView(APIView):
     permission_classes = [IsAuthenticated]
